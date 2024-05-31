@@ -1,5 +1,6 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
+from django.utils import timezone
 from rest_framework import (
     generics,
     permissions,
@@ -10,6 +11,8 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
+from datetime import datetime, timedelta
+from api.tasks import create_scheduled_post
 
 from api.models import (
     Follow,
@@ -143,3 +146,28 @@ class CommentViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         post = Post.objects.get(id=self.kwargs['post_id'])
         serializer.save(user=self.request.user, post=post)
+
+
+class SchedulePostView(APIView):
+    def post(self, request):
+        content = request.data.get("content")
+        media = request.data.get("media")
+        schedule_time = request.data.get("schedule_time")
+        schedule_time = datetime.strptime(
+            schedule_time,
+            "%Y-%m-%d %H:%M:%S"
+        )
+        if schedule_time < timezone.now():
+            return Response(
+                {"error": "Schedule time must be in the future."},
+                status=status.HTTP_400_BAD_REQUEST
+            )
+        delay = (schedule_time - timezone.now()).total_seconds()
+        create_scheduled_post.apply_async(
+            (request.user.id, content, media),
+            countdown=delay
+        )
+        return Response(
+            {"success": "Post scheduled successfully."},
+            status=status.HTTP_201_CREATED
+        )
