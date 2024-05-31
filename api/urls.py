@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import (
 from api.views import (
     RegisterView,
     UserProfileView,
-    FollowView, PostViewSet,
+    FollowView, PostViewSet, LikeView, CommentViewSet,
 )
 
 router = DefaultRouter()
@@ -21,6 +21,13 @@ urlpatterns = [
     path("token/verify/", TokenVerifyView.as_view(), name="token-verify"),
     path("profile/", UserProfileView.as_view(), name="profile"),
     path("follow/<str:username>", FollowView.as_view(), name="follow"),
+    path("posts/<int:post_id>/like/", LikeView.as_view(), name="like"),
+    path(
+        "posts/<int:post_id>/comments/",
+        CommentViewSet.as_view(
+            {"get": "list", "post": "create"}
+        ),
+        name="comments"),
 ]
 
 urlpatterns += router.urls
