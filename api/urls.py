@@ -8,7 +8,7 @@ from rest_framework_simplejwt.views import (
 from api.views import (
     RegisterView,
     UserProfileView,
-    FollowView, PostViewSet, LikeView, CommentViewSet,
+    FollowView, PostViewSet, LikeView, CommentViewSet, SchedulePostView,
 )
 
 router = DefaultRouter()
@@ -28,6 +28,7 @@ urlpatterns = [
             {"get": "list", "post": "create"}
         ),
         name="comments"),
+    path("schedule_post/", SchedulePostView.as_view(), name="schedule_post"),
 ]
 
 urlpatterns += router.urls
