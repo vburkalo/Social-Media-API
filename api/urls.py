@@ -1,4 +1,5 @@
 from django.urls import path
+from rest_framework.routers import DefaultRouter
 from rest_framework_simplejwt.views import (
     TokenObtainPairView,
     TokenRefreshView,
@@ -7,8 +8,11 @@ from rest_framework_simplejwt.views import (
 from api.views import (
     RegisterView,
     UserProfileView,
-    FollowView,
+    FollowView, PostViewSet,
 )
+
+router = DefaultRouter()
+router.register("posts", PostViewSet, basename="post")
 
 urlpatterns = [
     path("register/", RegisterView.as_view(), name="register"),
@@ -18,3 +22,5 @@ urlpatterns = [
     path("profile/", UserProfileView.as_view(), name="profile"),
     path("follow/<str:username>", FollowView.as_view(), name="follow"),
 ]
+
+urlpatterns += router.urls
