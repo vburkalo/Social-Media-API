@@ -1,12 +1,13 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions, status
+from rest_framework import generics, permissions, status, viewsets
+from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from api.models import Follow
-from api.serializers import RegisterSerializer, UserSerializer
+from api.models import Follow, Post
+from api.serializers import RegisterSerializer, UserSerializer, PostSerializer
 
 
 class RegisterView(generics.CreateAPIView):
@@ -78,3 +79,23 @@ class FollowView(APIView):
                 {"error": "User not found."},
                 status=status.HTTP_404_NOT_FOUND
             )
+
+
+class PostViewSet(viewsets.ModelViewSet):
+    queryset = Post.objects.all().order_by("-created_at")
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        serializer.save(user=self.request.user)
+
+    def get_queryset(self):
+        if "username" in self.request.query_params:
+            user = (
+                get_user_model().
+                objects.get(
+                    username=self.request.query_params["username"]
+                )
+            )
+            return Post.objects.filter(user=user)
+        return Post.objects.filter(user=self.request.user)
