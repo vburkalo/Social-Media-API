@@ -26,3 +26,22 @@ class Follow(models.Model):
 
     class Meta:
         unique_together = ("follower", "following")
+
+
+class Post(models.Model):
+    user = models.ForeignKey(
+        CustomUser,
+        on_delete=models.CASCADE,
+        related_name="posts"
+    )
+    content = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+    media = models.ImageField(
+        upload_to="posts/",
+        blank=True,
+        null=True,
+    )
+
+    def __str__(self):
+        return self.content[:20]
