@@ -1,13 +1,28 @@
 from django.shortcuts import render
 from django.contrib.auth import get_user_model
-from rest_framework import generics, permissions, status, viewsets
+from rest_framework import (
+    generics,
+    permissions,
+    status,
+    viewsets
+)
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from api.models import Follow, Post
-from api.serializers import RegisterSerializer, UserSerializer, PostSerializer
+from api.models import (
+    Follow,
+    Post,
+    Comment,
+    Like
+)
+from api.serializers import (
+    RegisterSerializer,
+    UserSerializer,
+    PostSerializer,
+    CommentSerializer
+)
 
 
 class RegisterView(generics.CreateAPIView):
@@ -99,3 +114,32 @@ class PostViewSet(viewsets.ModelViewSet):
             )
             return Post.objects.filter(user=user)
         return Post.objects.filter(user=self.request.user)
+
+
+class LikeView(APIView):
+    def post(self, request, post_id):
+        post = Post.objects.get(id=post_id)
+        like, created = Like.objects.get_or_create(
+            user=request.user,
+            post=post
+        )
+        if not created:
+            like.delete()
+            return Response(
+                {"success": "Post unliked."},
+                status=status.HTTP_204_NO_CONTENT
+            )
+        return Response(
+            {"success": "Post liked."},
+            status=status.HTTP_201_CREATED
+        )
+
+
+class CommentViewSet(viewsets.ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    permission_classes = [IsAuthenticated]
+
+    def perform_create(self, serializer):
+        post = Post.objects.get(id=self.kwargs['post_id'])
+        serializer.save(user=self.request.user, post=post)
