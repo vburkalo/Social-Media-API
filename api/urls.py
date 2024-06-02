@@ -46,7 +46,6 @@ urlpatterns = [
             {"get": "list", "post": "create"}
         ),
         name="comments"),
-    path("schedule_post/", SchedulePostView.as_view(), name="schedule_post"),
     path("own-posts/", OwnPostsListView.as_view(), name="own-posts-list"),
     path("following-posts/", FollowingPostsListView.as_view(), name="following-posts-list"),
     path("search-posts/", SearchPostsView.as_view(), name="search-posts"),
