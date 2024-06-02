@@ -25,7 +25,7 @@ from api.serializers import (
     RegisterSerializer,
     UserSerializer,
     PostSerializer,
-    CommentSerializer
+    CommentSerializer, FollowSerializer
 )
 from api.tasks import create_scheduled_post
 
@@ -38,6 +38,7 @@ class RegisterView(generics.CreateAPIView):
 
 class LogoutView(APIView):
     permission_classes = (IsAuthenticated, )
+    serializer_class = UserSerializer
 
     def post(self, request):
         try:
@@ -74,6 +75,7 @@ class UserSearchView(generics.ListAPIView):
 
 class FollowView(APIView):
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = FollowSerializer
 
     def post(self, request, username):
         user_to_follow = get_object_or_404(get_user_model(), username=username)
@@ -89,6 +91,7 @@ class FollowView(APIView):
 
 class UnfollowView(APIView):
     permission_classes = [IsAuthenticated]
+    serializer_class = FollowSerializer
 
     def post(self, request, username):
         user_to_unfollow = get_object_or_404(get_user_model(), username=username)
@@ -169,6 +172,9 @@ class SearchPostsView(generics.ListAPIView):
 
 
 class LikeView(APIView):
+    serializer_class = PostSerializer
+    permission_classes = [IsAuthenticated]
+
     def post(self, request, post_id):
         post = Post.objects.get(id=post_id)
         like, created = Like.objects.get_or_create(
