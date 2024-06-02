@@ -1,5 +1,7 @@
-from django.shortcuts import render, get_object_or_404
+from datetime import datetime
+
 from django.contrib.auth import get_user_model
+from django.shortcuts import get_object_or_404
 from django.utils import timezone
 from rest_framework import (
     generics,
@@ -11,10 +13,6 @@ from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnl
 from rest_framework.response import Response
 from rest_framework.views import APIView
 from rest_framework_simplejwt.tokens import RefreshToken
-from datetime import datetime, timedelta
-
-from api.permissions import IsOwnerOrReadOnly
-from api.tasks import create_scheduled_post
 
 from api.models import (
     Follow,
@@ -22,12 +20,14 @@ from api.models import (
     Comment,
     Like
 )
+from api.permissions import IsOwnerOrReadOnly
 from api.serializers import (
     RegisterSerializer,
     UserSerializer,
     PostSerializer,
     CommentSerializer
 )
+from api.tasks import create_scheduled_post
 
 
 class RegisterView(generics.CreateAPIView):
