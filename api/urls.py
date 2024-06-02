@@ -12,7 +12,6 @@ from api.views import (
     PostViewSet,
     LikeView,
     CommentViewSet,
-    SchedulePostView,
     LogoutView,
     UserSearchView,
     FollowingListView,
