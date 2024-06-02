@@ -20,10 +20,10 @@ class UserSerializer(serializers.ModelSerializer):
             "following_count"
         )
 
-    def get_followers_count(self, obj):
+    def get_followers_count(self, obj) -> int:
         return obj.followers.count()
 
-    def get_following_count(self, obj):
+    def get_following_count(self, obj) -> int:
         return obj.following.count()
 
 
