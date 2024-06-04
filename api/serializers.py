@@ -27,6 +27,10 @@ class UserSerializer(serializers.ModelSerializer):
         return obj.following.count()
 
 
+class LogoutSerializer(serializers.Serializer):
+    pass
+
+
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = get_user_model()
