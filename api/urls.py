@@ -39,12 +39,6 @@ urlpatterns = [
     path("following/", FollowingListView.as_view(), name="following-list"),
     path("followers/", FollowersListView.as_view(), name="followers-list"),
     path("posts/<int:post_id>/like/", LikeView.as_view(), name="like"),
-    path(
-        "posts/<int:post_id>/comments/",
-        CommentViewSet.as_view(
-            {"get": "list", "post": "create"}
-        ),
-        name="comments"),
     path("own-posts/", OwnPostsListView.as_view(), name="own-posts-list"),
     path("following-posts/", FollowingPostsListView.as_view(), name="following-posts-list"),
     path("search-posts/", SearchPostsView.as_view(), name="search-posts"),
