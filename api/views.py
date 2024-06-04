@@ -10,7 +10,6 @@ from rest_framework import (
 from rest_framework.permissions import IsAuthenticated, IsAuthenticatedOrReadOnly
 from rest_framework.response import Response
 from rest_framework.views import APIView
-from rest_framework_simplejwt.tokens import RefreshToken
 
 from api.models import (
     Follow,
@@ -378,5 +377,6 @@ class CommentViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def perform_create(self, serializer):
-        post = Post.objects.get(id=self.kwargs['post_id'])
+        post_id = self.request.data.get("post")
+        post = Post.objects.get(id=post_id)
         serializer.save(user=self.request.user, post=post)
