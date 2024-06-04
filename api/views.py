@@ -1,8 +1,5 @@
-from datetime import datetime
-
 from django.contrib.auth import get_user_model
 from django.shortcuts import get_object_or_404
-from django.utils.timezone import make_aware, now
 from drf_spectacular.utils import extend_schema, extend_schema_view, OpenApiParameter
 from rest_framework import (
     generics,
@@ -28,7 +25,6 @@ from api.serializers import (
     PostSerializer,
     CommentSerializer, FollowSerializer
 )
-from api.tasks import create_scheduled_post
 
 
 @extend_schema_view(
