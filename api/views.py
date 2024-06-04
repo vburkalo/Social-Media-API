@@ -23,7 +23,7 @@ from api.serializers import (
     RegisterSerializer,
     UserSerializer,
     PostSerializer,
-    CommentSerializer, FollowSerializer
+    CommentSerializer, FollowSerializer, LogoutSerializer
 )
 
 
@@ -55,17 +55,14 @@ class RegisterView(generics.CreateAPIView):
     )
 )
 class LogoutView(APIView):
-    permission_classes = (IsAuthenticated,)
-    serializer_class = UserSerializer
+    permission_classes = [IsAuthenticated]
 
     def post(self, request):
-        try:
-            refresh_token = request.data["refresh"]
-            token = RefreshToken(refresh_token)
-            token.blacklist()
-            return Response(status=205)
-        except Exception as e:
-            return Response(status=400)
+        serializer = LogoutSerializer(data=request.data)
+        if serializer.is_valid():
+            return Response(status=status.HTTP_200_OK)
+        else:
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 @extend_schema_view(
