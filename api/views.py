@@ -258,10 +258,13 @@ class PostViewSet(viewsets.ModelViewSet):
         serializer.save(user=self.request.user)
 
     def get_queryset(self):
-        if "username" in self.request.query_params:
-            user = get_user_model().objects.get(username=self.request.query_params["username"])
-            return Post.objects.filter(user=user)
-        return Post.objects.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            if "username" in self.request.query_params:
+                user = get_user_model().objects.get(username=self.request.query_params["username"])
+                return Post.objects.filter(user=user)
+            return Post.objects.filter(user=self.request.user)
+        else:
+            return Post.objects.all()
 
 
 @extend_schema_view(
